@@ -15,6 +15,8 @@
 package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /** Implementation of parsing strategy used in robots.txt parsing. */
@@ -148,6 +150,21 @@ public class RobotsParseHandler implements ParseHandler {
           break;
         }
       case SITEMAP:
+        try {
+          URL url = new URL(directiveValue);
+          robotsContents.addSitemap(directiveValue);
+        } catch (MalformedURLException e) {
+          logger.atInfo().log("Exception during parse sitemap. %s", directiveValue);
+        }
+        foundContent = true;
+        break;
+      case CRAWL_DELAY:
+        try {
+          currentGroup.setCrawlDelay(Integer.parseInt(directiveValue));
+        } catch (NumberFormatException e) {
+          logger.atInfo().log("Exception during parse crawl-delay. %s", directiveValue);
+        }
+        break;
       case UNKNOWN:
         {
           foundContent = true;

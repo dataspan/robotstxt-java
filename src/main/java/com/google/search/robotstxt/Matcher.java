@@ -15,6 +15,7 @@
 package com.google.search.robotstxt;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /** Interface of a matcher class. */
 public interface Matcher {
@@ -47,4 +48,8 @@ public interface Matcher {
    * @return {@code true} iff verdict is ALLOWED
    */
   boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url);
+
+  Integer getCrawlDelay(String userAgent);
+
+  Stream<String> getSitemaps();
 }

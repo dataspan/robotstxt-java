@@ -612,7 +612,7 @@ public class RobotsMatcherTest {
       assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://example.com/page.html"));
     }
   }
-    
+
   /** [Google-specific] Verifies: common typos in {@code DISALLOW} key should be fixed. */
   @Test
   public void testTyposFixes() {

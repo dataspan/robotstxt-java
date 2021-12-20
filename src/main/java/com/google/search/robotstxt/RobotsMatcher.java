@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Class implementing matching logic based on directives priorities those calculation is delegated
@@ -64,7 +66,7 @@ public class RobotsMatcher implements Matcher {
   }
 
   /** Used to extract contents for testing purposes. */
-  RobotsContents getRobotsContents() {
+  public RobotsContents getRobotsContents() {
     return robotsContents;
   }
 
@@ -104,9 +106,7 @@ public class RobotsMatcher implements Matcher {
     for (RobotsContents.Group group : robotsContents.getGroups()) {
       final boolean isSpecificGroup =
           userAgents.stream()
-              .anyMatch(
-                  userAgent ->
-                      group.getUserAgents().stream().anyMatch(userAgent::equalsIgnoreCase));
+              .anyMatch(userAgent -> group.getUserAgents().contains(userAgent.toLowerCase()));
       foundSpecificGroup |= isSpecificGroup;
       if (!isSpecificGroup && (ignoreGlobal || !group.isGlobal())) {
         continue;
@@ -197,5 +197,24 @@ public class RobotsMatcher implements Matcher {
     final String path = getPath(url);
     Map.Entry<Match, Match> matches = computeMatchPriorities(userAgents, path, true);
     return allowVerdict(matches.getKey(), matches.getValue());
+  }
+
+  @Override
+  public Integer getCrawlDelay(String userAgent) {
+    if (userAgent == null || userAgent.isEmpty()) {
+      return null;
+    }
+    return robotsContents.getGroups().stream()
+        .filter(
+            group -> group.isGlobal() || group.getUserAgents().contains(userAgent.toLowerCase()))
+        .map(RobotsContents.Group::getCrawlDelay)
+        .filter(Objects::nonNull)
+        .min(Integer::compareTo)
+        .orElse(null);
+  }
+
+  @Override
+  public Stream<String> getSitemaps() {
+    return robotsContents.sitemaps();
   }
 }

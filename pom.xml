@@ -22,7 +22,7 @@
 
   <groupId>com.google.search.robotstxt</groupId>
   <artifactId>robotstxt-java</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <name>robotstxt-java</name>
   <url>https://github.com/google/robotstxt-java</url>
@@ -33,12 +33,42 @@
     <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
+  <repositories>
+    <!-- Artifactory, the Internal Maven Repository -->
+    <repository>
+      <id>artifactory</id>
+      <url>http://artifactory.belprime.net/artifactory/repo</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>artifactory</id>
+      <url>http://artifactory.belprime.net/artifactory/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <repository>
+      <id>artifactory</id>
+      <name>artifactory-releases</name>
+      <url>http://releases.artifactory.belprime.net/artifactory/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>artifactory</id>
+      <name>artifactory-snapshots</name>
+      <url>http://releases.artifactory.belprime.net/artifactory/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
+<!--
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.12.2</version>
     </dependency>
+-->
 
     <dependency>
       <groupId>junit</groupId>
@@ -128,11 +158,11 @@
           <artifactId>fmt-maven-plugin</artifactId>
           <version>2.10</version>
         </plugin>
-        <plugin>
+<!--        <plugin>
           <groupId>org.xolstice.maven.plugins</groupId>
           <artifactId>protobuf-maven-plugin</artifactId>
           <version>0.6.1</version>
-        </plugin>
+        </plugin>-->
       </plugins>
     </pluginManagement>
 

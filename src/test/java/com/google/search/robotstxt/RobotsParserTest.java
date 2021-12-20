@@ -15,6 +15,9 @@
 package com.google.search.robotstxt;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -279,5 +282,48 @@ public class RobotsParserTest {
                             Parser.DirectiveType.DISALLOW, "/foo?bar%AA%a")))));
 
     parseAndValidate(robotsTxtBody, expectedContents);
+  }
+
+  @Test
+  public void testSitemap() {
+    String sitemap = "http://foo.bar/sitemap.xml";
+    final String robotsTxtBody = "User-Agent: foo\n" + "sitemap: " + sitemap;
+
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    assertNotNull(matcher);
+    assertEquals(sitemap, matcher.getSitemaps().findFirst().orElse(null));
+  }
+
+  @Test
+  public void testWrongSitemapUrl() {
+    String sitemap = "/path";
+    final String robotsTxtBody = "User-Agent: foo\n" + "sitemap: " + sitemap;
+
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    assertNotNull(matcher);
+    assertNull(matcher.getSitemaps().findFirst().orElse(null));
+  }
+
+  @Test
+  public void testCrawlDelay() {
+    int delay = 3;
+    final String robotsTxtBody = "User-Agent: foo\n" + "crawl-delay: " + delay;
+
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    assertNotNull(matcher);
+    assertEquals(delay, matcher.getCrawlDelay("foo").intValue());
+  }
+
+  @Test
+  public void testWrongCrawlDelay() {
+    final String robotsTxtBody = "User-Agent: foo\n" + "crawl-delay: 3d";
+
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    assertNotNull(matcher);
+    assertNull(matcher.getCrawlDelay("foo"));
   }
 }

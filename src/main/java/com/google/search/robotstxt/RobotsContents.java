@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Representation of robots.txt contents: multiple groups of rules. */
 public class RobotsContents {
@@ -64,6 +66,7 @@ public class RobotsContents {
 
     private final Set<String> userAgents;
     private final Set<Rule> rules;
+    private volatile int crawlDelay = -1;
     private boolean global = false;
 
     Group() {
@@ -78,7 +81,7 @@ public class RobotsContents {
 
     // Intended to be used from tests only.
     Group(final List<String> userAgents, final List<Rule> rules, final boolean global) {
-      this.userAgents = new HashSet<>(userAgents);
+      this.userAgents = userAgents.stream().map(String::toLowerCase).collect(Collectors.toSet());
       this.rules = new HashSet<>(rules);
       this.global = global;
     }
@@ -103,7 +106,7 @@ public class RobotsContents {
             break;
           }
         }
-        userAgents.add(userAgent.substring(0, end));
+        userAgents.add(userAgent.substring(0, end).toLowerCase());
       }
     }
 
@@ -127,6 +130,14 @@ public class RobotsContents {
       return global;
     }
 
+    void setCrawlDelay(int crawlDelay) {
+      this.crawlDelay = crawlDelay;
+    }
+
+    public Integer getCrawlDelay() {
+      return crawlDelay < 0 ? null : crawlDelay;
+    }
+
     @Override
     public boolean equals(Object obj) {
       if (this == obj) return true;
@@ -134,16 +145,18 @@ public class RobotsContents {
       Group other = (Group) obj;
       return Objects.equals(userAgents, other.userAgents)
           && Objects.equals(rules, other.rules)
-          && Objects.equals(global, other.global);
+          && Objects.equals(global, other.global)
+          && Objects.equals(crawlDelay, other.crawlDelay);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(userAgents, rules);
+      return Objects.hash(userAgents, rules, global, crawlDelay);
     }
   }
 
   private final List<Group> groups;
+  private final Set<String> sitemaps = new HashSet<>();
 
   RobotsContents() {
     groups = new ArrayList<>();
@@ -159,5 +172,13 @@ public class RobotsContents {
 
   public List<Group> getGroups() {
     return groups;
+  }
+
+  void addSitemap(String sitemap) {
+    this.sitemaps.add(sitemap);
+  }
+
+  public Stream<String> sitemaps() {
+    return this.sitemaps.stream();
   }
 }

@@ -20,11 +20,22 @@ package com.google.search.robotstxt;
  */
 public abstract class Parser {
   enum DirectiveType {
-    USER_AGENT,
-    ALLOW,
-    DISALLOW,
-    SITEMAP,
-    UNKNOWN
+    USER_AGENT("user-agent"),
+    ALLOW("allow"),
+    DISALLOW("disallow"),
+    SITEMAP("sitemap"),
+    CRAWL_DELAY("crawl-delay"),
+    UNKNOWN(null);
+
+    private final String value;
+
+    DirectiveType(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
   }
 
   protected ParseHandler parseHandler;

@@ -67,8 +67,10 @@ public class RobotsParser extends Parser {
   }
 
   private static DirectiveType parseDirective(final String key) {
-    if (key.equalsIgnoreCase("user-agent")) {
+    if (key.equalsIgnoreCase(DirectiveType.USER_AGENT.getValue())) {
       return DirectiveType.USER_AGENT;
+    } else if (key.equalsIgnoreCase(DirectiveType.CRAWL_DELAY.getValue())) {
+      return DirectiveType.CRAWL_DELAY;
     } else {
       try {
         return DirectiveType.valueOf(key.toUpperCase());
@@ -226,7 +228,7 @@ public class RobotsParser extends Parser {
   }
 
   @Override
-  Matcher parse(byte[] robotsTxtBodyBytes) {
+  public Matcher parse(byte[] robotsTxtBodyBytes) {
     final byte[] bomUtf8 = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
     int bomPos = 0;
 
